@@ -1,0 +1,14 @@
+{
+  "name": "strut",
+  "version": "1.0.0",
+  "description": "text to wiggles",
+  "main": "index.js",
+  "scripts": {
+    "start": "coffee src/server.coffee"
+  },
+  "author": "James Rodovich",
+  "license": "ISC",
+  "dependencies": {
+    "coffee-script": "^1.10.0"
+  }
+}
