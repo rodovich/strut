@@ -1,15 +1,15 @@
-[W, H] = [12, 12]
+[MAX_X, MAX_Y] = [12, 12]
 DIAMETER = 1 / 8
 FEED_RATE = 30
 
 svg = d3.select '#preview'
-  .attr 'viewBox', "0 0 #{W} #{H}"
+  .attr 'viewBox', "0 0 #{MAX_X} #{MAX_Y}"
   .append 'g'
-  .attr 'transform', "translate(0, #{H}) scale(1, -1)"
+  .attr 'transform', "translate(0, #{MAX_Y}) scale(1, -1)"
 
 do -> # add grid
-  for y in [1 ... H]
-    for x in [1 ... W]
+  for y in [1 ... Math.ceil(MAX_Y)]
+    for x in [1 ... Math.ceil(MAX_X)]
       svg.append 'circle'
         .attr 'class', 'grid'
         .attr 'cx', x
@@ -31,6 +31,7 @@ commands = do ->
     .attr 'cx', x
     .attr 'cy', y
     .attr 'r', DIAMETER / 2
+    .attr 'stroke-width', DIAMETER / 4
 
   gcode = d3.select('#gcode')
 
@@ -72,13 +73,13 @@ commands = do ->
 run = (js) ->
   doRun = eval """
     (function() {
-      return function(moveForward, turnLeft, turnRight, currentX, currentY, currentHeading) {
+      return function(MAX_X, MAX_Y, DIAMETER, moveForward, turnLeft, turnRight, currentX, currentY, currentHeading) {
         #{js}
       };
     })()
     """
   { moveForward, turnLeft, turnRight, currentX, currentY, currentHeading } = commands
-  doRun? moveForward, turnLeft, turnRight, currentX, currentY, currentHeading
+  doRun? MAX_X, MAX_Y, DIAMETER, moveForward, turnLeft, turnRight, currentX, currentY, currentHeading
 
 d3.select('#run').on 'click', ->
   run d3.select('#input').property('value')
