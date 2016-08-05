@@ -53,8 +53,11 @@ commands = do ->
     history.length
 
   moveForward: (distance = 1) ->
-    x += distance * Math.cos(heading)
-    y += distance * Math.sin(heading)
+    newX = x + distance * Math.cos(heading)
+    newY = y + distance * Math.sin(heading)
+    unless 0 <= newX <= MAX_X and 0 <= newY <= MAX_Y
+      throw new Error("Exited at #{newX}, #{newY}")
+    [x, y] = [newX, newY]
     history.push [x, y]
     [x, y]
 
@@ -86,8 +89,13 @@ run = (js) ->
     """
   { moveForward, turnLeft, turnRight, currentX, currentY, currentHeading } = commands
   step = doRun? MAX_X, MAX_Y, DIAMETER, moveForward, turnLeft, turnRight, currentX, currentY, currentHeading
-  setInterval ->
-    step()
+
+  interval = setInterval ->
+    try
+      step()
+    catch
+      clearInterval(interval)
+      interval = null
     commands.update()
   , 50
 
