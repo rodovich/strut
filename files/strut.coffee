@@ -17,7 +17,7 @@ do -> # add grid
         .attr 'r', DIAMETER / 3
 
 commands = do ->
-  [x, y] = [1, 1]
+  [x, y] = [MAX_X / 2, MAX_Y / 2]
   heading = 0
   history = [[x, y]]
 
