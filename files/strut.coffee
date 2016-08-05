@@ -43,16 +43,19 @@ commands = do ->
       "G1 X#{point[0].toFixed(3)} Y#{point[1].toFixed(3)} F#{FEED_RATE}"
     lines.join('\n')
 
-  moveForward: (distance = 1) ->
-    x += distance * Math.cos(heading)
-    y += distance * Math.sin(heading)
-    history.push [x, y]
+  update: ->
     marker
       .attr 'cx', x
       .attr 'cy', y
     path
       .attr 'd', pointsToPathData(history)
     gcode.text pointsToGcode(history)
+    history.length
+
+  moveForward: (distance = 1) ->
+    x += distance * Math.cos(heading)
+    y += distance * Math.sin(heading)
+    history.push [x, y]
     [x, y]
 
   turnLeft: (angle = Math.PI / 2) ->
@@ -83,7 +86,10 @@ run = (js) ->
     """
   { moveForward, turnLeft, turnRight, currentX, currentY, currentHeading } = commands
   step = doRun? MAX_X, MAX_Y, DIAMETER, moveForward, turnLeft, turnRight, currentX, currentY, currentHeading
-  setInterval step, 50
+  setInterval ->
+    step()
+    commands.update()
+  , 50
 
 d3.select('#run').on 'click', ->
   run d3.select('#input').property('value')
