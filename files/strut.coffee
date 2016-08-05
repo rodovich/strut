@@ -90,9 +90,11 @@ run = (js) ->
   { moveForward, turnLeft, turnRight, currentX, currentY, currentHeading } = commands
   step = doRun? MAX_X, MAX_Y, DIAMETER, moveForward, turnLeft, turnRight, currentX, currentY, currentHeading
 
+  steps = 0
   interval = setInterval ->
+    steps += 1
     try
-      step()
+      step() for i in [1 .. Math.sqrt(steps)]
     catch
       clearInterval(interval)
       interval = null
