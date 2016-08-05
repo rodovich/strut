@@ -5,18 +5,23 @@
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <div class="left">
-    <div class="details">
-      <h1>Strut!</h1>
-      <h2>Define some badass wobbles.</h2>
+  <div class="vertical">
+    <div class="horizontal">
+      <div class="left vertical">
+        <div class="details">
+          <h1>Strut!</h1>
+          <h2>Define some badass wobbles.</h2>
+        </div>
+        <div class="vertical inputs">
+          <textarea id="input"></textarea>
+          <button id="run">Strut!</button>
+        </div>
+      </div>
+      <div class="preview">
+        <svg id="preview"></svg>
+      </div>
     </div>
-    <div class="inputs">
-      <textarea id="input"></textarea>
-      <button id="run">Strut!</button>
-    </div>
-  </div>
-  <div class="preview">
-    <svg id="preview"></svg>
+    <pre id="gcode"></pre>
   </div>
   <script src="/d3.js"></script>
   <script src="/strut.js"></script>

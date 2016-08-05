@@ -12,7 +12,14 @@ body {
   font-family: 'avenir next', sans-serif;
   font-size: 1rem;
   color: #222;
+}
+.horizontal {
   display: flex;
+  justify-content: space-between;
+}
+.vertical {
+  display: flex;
+  flex-flow: column;
   justify-content: space-between;
 }
 h1 {
@@ -33,9 +40,6 @@ h1, h2 {
 .left {
   width: 20rem;
   height: 38rem;
-  display: flex;
-  flex-flow: column;
-  justify-content: space-between;
 }
 .details {
   height: 4rem;
@@ -46,6 +50,14 @@ h1, h2 {
   border-radius: 0.5rem;
   background: #f9f9f9;
 }
+#gcode {
+  width: 20rem;
+  margin: 4rem auto 0;
+  padding: 0.5em 1em;
+  border-radius: 0.5rem;
+  background: #f9f9f9;
+  color: #999;
+}
 #preview {
   box-sizing: content-box;
   width: 36rem;
@@ -55,9 +67,6 @@ h1, h2 {
 }
 .inputs {
   height: 32rem;
-  display: flex;
-  flex-flow: column;
-  justify-content: space-between;
   align-items: flex-end;
 }
 textarea {

@@ -1,5 +1,6 @@
 [W, H] = [12, 12]
 DIAMETER = 1 / 8
+FEED_RATE = 30
 
 svg = d3.select '#preview'
   .attr 'viewBox', "0 0 #{W} #{H}"
@@ -31,6 +32,16 @@ commands = do ->
     .attr 'cy', y
     .attr 'r', DIAMETER / 2
 
+  gcode = d3.select('#gcode')
+
+  pointsToPathData = (points) ->
+    "M #{points}"
+
+  pointsToGcode = (points) ->
+    lines = for point in points
+      "G1 X#{point[0].toFixed(3)} Y#{point[1].toFixed(3)} F#{FEED_RATE}"
+    lines.join('\n')
+
   moveForward: (distance = 1) ->
     x += distance * Math.cos(heading)
     y += distance * Math.sin(heading)
@@ -39,7 +50,8 @@ commands = do ->
       .attr 'cx', x
       .attr 'cy', y
     path
-      .attr 'd', "M #{history}"
+      .attr 'd', pointsToPathData(history)
+    gcode.text pointsToGcode(history)
     [x, y]
 
   turnLeft: (angle = Math.PI / 2) ->
