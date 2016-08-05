@@ -1,6 +1,7 @@
 [MAX_X, MAX_Y] = [12, 12]
 DIAMETER = 1 / 8
 FEED_RATE = 30
+PLUNGE_RATE = 10
 
 svg = d3.select '#preview'
   .attr 'viewBox', "0 0 #{MAX_X} #{MAX_Y}"
@@ -19,11 +20,28 @@ do -> # add grid
 commands = do ->
   [x, y] = [MAX_X / 2, MAX_Y / 2]
   heading = 0
-  history = [[x, y]]
+  down = false
+  history = []
+
+  pointsToPathData = (points) ->
+    return '' if points.length is 0
+    subpaths = ("M #{subsequence}" for subsequence in points)
+    subpaths.join(' ')
+
+  pointsToGcode = (points) ->
+    lines = []
+    for subsequence in points
+      point = subsequence[0]
+      lines.push "G0 X#{point[0].toFixed(3)} Y#{point[1].toFixed(3)}"
+      lines.push "G1 Z0 F#{PLUNGE_RATE}"
+      for point in subsequence[1...]
+        lines.push "G1 X#{point[0].toFixed(3)} Y#{point[1].toFixed(3)} F#{FEED_RATE}"
+      lines.push "G0 Z0.25"
+    lines.join('\n')
 
   path = svg.append 'path'
     .attr 'class', 'path'
-    .attr 'd', "M #{history}"
+    .attr 'd', pointsToPathData(history)
     .attr 'stroke-width', DIAMETER / 2
 
   marker = svg.append 'circle'
@@ -35,14 +53,6 @@ commands = do ->
 
   gcode = d3.select('#gcode')
 
-  pointsToPathData = (points) ->
-    "M #{points}"
-
-  pointsToGcode = (points) ->
-    lines = for point in points
-      "G1 X#{point[0].toFixed(3)} Y#{point[1].toFixed(3)} F#{FEED_RATE}"
-    lines.join('\n')
-
   update: ->
     marker
       .attr 'cx', x
@@ -52,13 +62,22 @@ commands = do ->
     gcode.text pointsToGcode(history)
     history.length
 
+  raise: ->
+    down = false
+
+  lower: ->
+    unless down
+      down = true
+      history.push [[x, y]]
+
   moveForward: (distance = DIAMETER) ->
     newX = x + distance * Math.cos(heading)
     newY = y + distance * Math.sin(heading)
     unless 0 <= newX <= MAX_X and 0 <= newY <= MAX_Y
       throw new Error("Exited at #{newX}, #{newY}")
     [x, y] = [newX, newY]
-    history.push [x, y]
+    if down
+      history[history.length - 1].push [x, y]
     [x, y]
 
   turnLeft: (angle = Math.PI / 2) ->
@@ -79,7 +98,7 @@ commands = do ->
 run = (js) ->
   doRun = eval """
     (function() {
-      return function(MAX_X, MAX_Y, DIAMETER, moveForward, turnLeft, turnRight, currentX, currentY, currentHeading) {
+      return function(MAX_X, MAX_Y, DIAMETER, moveForward, turnLeft, turnRight, raise, lower, currentX, currentY, currentHeading) {
         var state = {};
         return function() {
           #{js}
@@ -87,8 +106,8 @@ run = (js) ->
       };
     })()
     """
-  { moveForward, turnLeft, turnRight, currentX, currentY, currentHeading } = commands
-  step = doRun? MAX_X, MAX_Y, DIAMETER, moveForward, turnLeft, turnRight, currentX, currentY, currentHeading
+  { moveForward, turnLeft, turnRight, raise, lower, currentX, currentY, currentHeading } = commands
+  step = doRun? MAX_X, MAX_Y, DIAMETER, moveForward, turnLeft, turnRight, raise, lower, currentX, currentY, currentHeading
 
   steps = 0
   interval = setInterval ->
@@ -106,6 +125,7 @@ d3.select('#run').on 'click', ->
 
 d3.select('#input').property 'value',
   """
+  lower();
   var key = currentX().toFixed(5) + ' ' + currentY().toFixed(5);
 
   if (state[key]) {
