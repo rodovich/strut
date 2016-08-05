@@ -102,6 +102,9 @@ button {
   border-radius: 0.5rem;
   cursor: pointer;
 }
+button:focus {
+  outline: none;
+}
 button:hover {
   border: 0.125rem solid #39f;
   background: #39f;
@@ -114,7 +117,7 @@ button:hover {
 }
 .marker {
   fill: #39f;
-  stroke: none;
+  stroke: #fff;
 }
 .path {
   fill: none;
