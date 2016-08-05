@@ -1,0 +1,100 @@
+* {
+  box-sizing: border-box;
+}
+html {
+  font-size: 16px;
+  padding: 40px;
+}
+body {
+  width: 60rem;
+  margin: 0 auto;
+  padding: 0;
+  font-family: 'avenir next', sans-serif;
+  font-size: 1rem;
+  color: #222;
+  display: flex;
+  justify-content: space-between;
+}
+h1 {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  font-weight: 400;
+  color: #e43;
+}
+h2 {
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  color: #333;
+}
+h1, h2 {
+  margin: 0;
+}
+.left {
+  width: 20rem;
+  height: 38rem;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+}
+.details {
+  height: 4rem;
+}
+.preview {
+  width: 38rem;
+  height: 38rem;
+  border-radius: 0.5rem;
+  background: #f9f9f9;
+}
+#preview {
+  box-sizing: content-box;
+  width: 36rem;
+  height: 36rem;
+  margin: 0.875rem;
+  border: 0.125rem dashed #ccc;
+}
+.inputs {
+  height: 32rem;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+textarea {
+  margin: 0;
+  width: 100%;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5rem;
+  color: #333;
+  border: 0.25rem solid #eee;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  height: 29em;
+}
+textarea:focus {
+  outline: none;
+  border-color: #def;
+}
+textarea::selection {
+  background: #39f;
+  color: #fff;
+}
+button {
+  width: 8rem;
+  background: #fff;
+  color: #39f;
+  border: 0.125rem solid #def;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.25rem;
+  padding: 0.25rem 1.25rem;
+  margin: 0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+button:hover {
+  border: 0.125rem solid #39f;
+  background: #39f;
+  color: #fff;
+}
