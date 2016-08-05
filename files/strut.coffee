@@ -87,3 +87,17 @@ run = (js) ->
 
 d3.select('#run').on 'click', ->
   run d3.select('#input').property('value')
+
+d3.select('#input').property 'value',
+  """
+  var key = (currentX().toFixed(3)) + " " + (currentY().toFixed(3));
+
+  if (state[key]) {
+    turnLeft();
+    delete state[key];
+  } else {
+    turnRight();
+    state[key] = true;
+  }
+  moveForward(DIAMETER);
+  """
