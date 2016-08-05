@@ -5,16 +5,17 @@ router = (processors) ->
   { coffee } = processors
 
   routes =
-    '/': { file: 'index.html' }
-    '/strut.js': { file: 'strut.coffee', processor: coffee }
-    '/styles.css': { file: 'styles.css' }
+    '/': { file: './files/index.html' }
+    '/d3.js': { file: './node_modules/d3/build/d3.js' }
+    '/strut.js': { file: './files/strut.coffee', processor: coffee }
+    '/styles.css': { file: './files/styles.css' }
 
   route: (url, callback) ->
     handler = routes[url]
     return callback() unless handler?
 
     { file, processor } = handler
-    fs.readFile "./files/#{file}", 'utf8', (err, data) ->
+    fs.readFile file, 'utf8', (err, data) ->
       throw err if err?
       data = processor(data) if processor?
       callback(data)

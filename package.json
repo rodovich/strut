@@ -9,6 +9,7 @@
   "author": "James Rodovich",
   "license": "ISC",
   "dependencies": {
-    "coffee-script": "^1.10.0"
+    "coffee-script": "^1.10.0",
+    "d3": "^4.1.1"
   }
 }

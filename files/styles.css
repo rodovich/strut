@@ -98,3 +98,8 @@ button:hover {
   background: #39f;
   color: #fff;
 }
+
+.grid {
+  fill: #ddd;
+  stroke: none;
+}
