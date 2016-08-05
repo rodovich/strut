@@ -103,3 +103,14 @@ button:hover {
   fill: #ddd;
   stroke: none;
 }
+.marker {
+  fill: #39f;
+  stroke: none;
+}
+.path {
+  fill: none;
+  stroke: #39f;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  opacity: 0.4;
+}
