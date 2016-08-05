@@ -52,7 +52,7 @@ commands = do ->
     gcode.text pointsToGcode(history)
     history.length
 
-  moveForward: (distance = 1) ->
+  moveForward: (distance = DIAMETER) ->
     newX = x + distance * Math.cos(heading)
     newY = y + distance * Math.sin(heading)
     unless 0 <= newX <= MAX_X and 0 <= newY <= MAX_Y
@@ -115,5 +115,5 @@ d3.select('#input').property 'value',
     turnRight();
     state[key] = true;
   }
-  moveForward(DIAMETER);
+  moveForward();
   """
