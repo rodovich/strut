@@ -74,12 +74,16 @@ run = (js) ->
   doRun = eval """
     (function() {
       return function(MAX_X, MAX_Y, DIAMETER, moveForward, turnLeft, turnRight, currentX, currentY, currentHeading) {
-        #{js}
+        var state = {};
+        return function() {
+          #{js}
+        };
       };
     })()
     """
   { moveForward, turnLeft, turnRight, currentX, currentY, currentHeading } = commands
-  doRun? MAX_X, MAX_Y, DIAMETER, moveForward, turnLeft, turnRight, currentX, currentY, currentHeading
+  step = doRun? MAX_X, MAX_Y, DIAMETER, moveForward, turnLeft, turnRight, currentX, currentY, currentHeading
+  setInterval step, 50
 
 d3.select('#run').on 'click', ->
   run d3.select('#input').property('value')
