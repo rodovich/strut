@@ -96,7 +96,7 @@ d3.select('#run').on 'click', ->
 
 d3.select('#input').property 'value',
   """
-  var key = (currentX().toFixed(3)) + " " + (currentY().toFixed(3));
+  var key = currentX().toFixed(5) + ' ' + currentY().toFixed(5);
 
   if (state[key]) {
     turnLeft();
