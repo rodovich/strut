@@ -1,5 +1,5 @@
 [MAX_X, MAX_Y] = [12, 12]
-DIAMETER = 1 / 8
+DIAMETER = 1 / 16
 FEED_RATE = 30
 PLUNGE_RATE = 10
 
@@ -42,7 +42,7 @@ commands = do ->
   path = svg.append 'path'
     .attr 'class', 'path'
     .attr 'd', pointsToPathData(history)
-    .attr 'stroke-width', DIAMETER / 2
+    .attr 'stroke-width', DIAMETER
 
   marker = svg.append 'circle'
     .attr 'class', 'marker'
@@ -125,15 +125,18 @@ d3.select('#run').on 'click', ->
 
 d3.select('#input').property 'value',
   """
-  lower();
+  var N = 0, U = Math.PI,
+    L1 = U / 3, L2 = 2 * L1,
+    R1 = -L1, R2 = -L2;
+  var STATES = [
+    L1, L2, N, U, L2, L1, R2
+  ];
   var key = currentX().toFixed(5) + ' ' + currentY().toFixed(5);
 
-  if (state[key]) {
-    turnLeft();
-    delete state[key];
-  } else {
-    turnRight();
-    state[key] = true;
-  }
+  var currentState = state[key] || 0;
+  turnLeft(STATES[currentState]);
+  state[key] = (currentState + 1) % STATES.length;
+
+  lower();
   moveForward();
   """
