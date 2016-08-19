@@ -123,20 +123,56 @@ run = (js) ->
 d3.select('#run').on 'click', ->
   run d3.select('#input').property('value')
 
-d3.select('#input').property 'value',
-  """
-  var N = 0, U = Math.PI,
-    L1 = U / 3, L2 = 2 * L1,
-    R1 = -L1, R2 = -L2;
-  var STATES = [
-    L1, L2, N, U, L2, L1, R2
-  ];
-  var key = currentX().toFixed(5) + ' ' + currentY().toFixed(5);
+EXAMPLE =
+  ant: """
+    var N = 0, U = Math.PI,
+      L1 = U / 3, L2 = 2 * L1,
+      R1 = -L1, R2 = -L2;
+    var STATES = [
+      L1, L2, N, U, L2, L1, R2
+    ];
+    var key = currentX().toFixed(5) + ' ' + currentY().toFixed(5);
 
-  var currentState = state[key] || 0;
-  turnLeft(STATES[currentState]);
-  state[key] = (currentState + 1) % STATES.length;
+    var currentState = state[key] || 0;
+    turnLeft(STATES[currentState]);
+    state[key] = (currentState + 1) % STATES.length;
 
-  lower();
-  moveForward();
-  """
+    lower();
+    moveForward();
+    """
+  gravity: """
+    state.dt = state.dt || 1;
+    state.t = (state.t || 0) + state.dt;
+    state.v = state.v || { x: 0, y: 0 };
+    state.attractors = [
+      { x: 5, y: 3, G: 0.004 },
+      { x: 5, y: 5, G: 0.0004 },
+    ];
+
+    var a = { x: 0, y: 0 };
+    state.attractors.forEach(function(p) {
+      var dx = p.x - currentX();
+      var dy = p.y - currentY();
+      var d = Math.hypot(dy, dx);
+      a.x += state.dt * p.G * (dx / d) / Math.pow(d, 2);
+      a.y += state.dt * p.G * (dy / d) / Math.pow(d, 2);
+    });
+
+    var v = state.v;
+    var v2 = { x: v.x + a.x, y: v.y + a.y };
+    var dt = 1 / 16;
+    state.v = v2;
+    state.dt = dt;
+
+    lower();
+    turnLeft(Math.atan2(v2.y, v2.x) - Math.atan2(v.y, v.x));
+    moveForward(Math.hypot(dt * v.y, dt * v.x));
+    """
+
+applySelectedExample = ->
+  example = d3.select('#example').property('value')
+  d3.select('#input').property 'value', EXAMPLE[example]
+
+d3.select('#example').on 'click', applySelectedExample
+
+applySelectedExample()

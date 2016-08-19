@@ -66,8 +66,29 @@ h1, h2 {
   border: 0.125rem dashed #ccc;
 }
 .inputs {
-  height: 32rem;
+  height: 33rem;
   align-items: flex-end;
+}
+select {
+  width: 100%;
+  height: 2rem;
+  background: #fff;
+  color: #999;
+  border: 0.125rem solid #eee;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.25rem;
+  padding: 0.25rem 1.25rem;
+  margin: 0;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+select:hover {
+  border-color: #def;
+  color: #39f;
+}
+select:focus {
+  outline: none;
 }
 textarea {
   margin: 0;
@@ -79,7 +100,7 @@ textarea {
   border: 0.25rem solid #eee;
   border-radius: 0.25rem;
   padding: 0.25rem 0.5rem;
-  height: 29em;
+  height: 27rem;
 }
 textarea:focus {
   outline: none;
@@ -91,6 +112,7 @@ textarea::selection {
 }
 button {
   width: 8rem;
+  height: 2rem;
   background: #fff;
   color: #39f;
   border: 0.125rem solid #def;
