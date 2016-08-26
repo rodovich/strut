@@ -5,24 +5,40 @@ PLUNGE_RATE = 10
 
 svg = d3.select '#preview'
   .attr 'viewBox', "0 0 #{MAX_X} #{MAX_Y}"
-  .append 'g'
+
+g = svg.append 'g'
   .attr 'transform', "translate(0, #{MAX_Y}) scale(1, -1)"
 
 do -> # add grid
   for y in [1 ... Math.ceil(MAX_Y)]
     for x in [1 ... Math.ceil(MAX_X)]
-      svg.append 'circle'
+      g.append 'circle'
         .attr 'class', 'grid'
         .attr 'cx', x
         .attr 'cy', y
         .attr 'r', DIAMETER / 3
 
-commands = do ->
-  [x, y] = [MAX_X / 2, MAX_Y / 2]
-  heading = 0
-  down = false
-  history = []
 
+state = {}
+[x, y] = [MAX_X / 2, MAX_Y / 2]
+heading = 0
+down = false
+history = []
+
+gcode = d3.select('#gcode')
+
+path = g.append 'path'
+  .attr 'class', 'path'
+  .attr 'stroke-width', DIAMETER
+
+marker = g.append 'circle'
+  .attr 'class', 'marker'
+  .attr 'cx', x
+  .attr 'cy', y
+  .attr 'r', DIAMETER / 2
+  .attr 'stroke-width', DIAMETER / 4
+
+update = do ->
   pointsToPathData = (points) ->
     return '' if points.length is 0
     subpaths = ("M #{subsequence}" for subsequence in points)
@@ -39,21 +55,7 @@ commands = do ->
       lines.push "G0 Z0.25"
     lines.join('\n')
 
-  path = svg.append 'path'
-    .attr 'class', 'path'
-    .attr 'd', pointsToPathData(history)
-    .attr 'stroke-width', DIAMETER
-
-  marker = svg.append 'circle'
-    .attr 'class', 'marker'
-    .attr 'cx', x
-    .attr 'cy', y
-    .attr 'r', DIAMETER / 2
-    .attr 'stroke-width', DIAMETER / 4
-
-  gcode = d3.select('#gcode')
-
-  update: ->
+  ->
     marker
       .attr 'cx', x
       .attr 'cy', y
@@ -62,6 +64,7 @@ commands = do ->
     gcode.text pointsToGcode(history)
     history.length
 
+commands = do ->
   raise: ->
     down = false
 
@@ -95,8 +98,6 @@ commands = do ->
   currentHeading: ->
     heading
 
-state = {}
-
 interval = null
 stopRunning = ->
   d3.select('#run').style 'display', 'block'
@@ -110,6 +111,7 @@ run = (js) ->
 
   d3.select('#run').style 'display', 'none'
   d3.select('#stop').style 'display', 'block'
+  d3.select('#reset').style 'display', 'block'
 
   doRun = eval """
     (function() {
@@ -130,16 +132,25 @@ run = (js) ->
       step() for i in [1 .. Math.sqrt(steps)]
     catch
       stopRunning()
-    commands.update()
+    update()
   , 50
 
 reset = ->
   stopRunning()
+  state = {}
+  [x, y] = [MAX_X / 2, MAX_Y / 2]
+  heading = 0
+  down = false
+  history = []
+  update()
+  d3.select('#reset').style 'display', 'none'
 
 d3.select('#run').on 'click', ->
   run d3.select('#input').property('value')
 
 d3.select('#stop').on 'click', stopRunning
+
+d3.select('#reset').on 'click', reset
 
 reset()
 
