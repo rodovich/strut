@@ -95,11 +95,25 @@ commands = do ->
   currentHeading: ->
     heading
 
+state = {}
+
+interval = null
+stopRunning = ->
+  d3.select('#run').style 'display', 'block'
+  d3.select('#stop').style 'display', 'none'
+  if interval?
+    clearInterval(interval)
+    interval = null
+
 run = (js) ->
+  stopRunning()
+
+  d3.select('#run').style 'display', 'none'
+  d3.select('#stop').style 'display', 'block'
+
   doRun = eval """
     (function() {
-      return function(MAX_X, MAX_Y, DIAMETER, moveForward, turnLeft, turnRight, raise, lower, currentX, currentY, currentHeading) {
-        var state = {};
+      return function(state, MAX_X, MAX_Y, DIAMETER, moveForward, turnLeft, turnRight, raise, lower, currentX, currentY, currentHeading) {
         return function() {
           #{js}
         };
@@ -107,7 +121,7 @@ run = (js) ->
     })()
     """
   { moveForward, turnLeft, turnRight, raise, lower, currentX, currentY, currentHeading } = commands
-  step = doRun? MAX_X, MAX_Y, DIAMETER, moveForward, turnLeft, turnRight, raise, lower, currentX, currentY, currentHeading
+  step = doRun? state, MAX_X, MAX_Y, DIAMETER, moveForward, turnLeft, turnRight, raise, lower, currentX, currentY, currentHeading
 
   steps = 0
   interval = setInterval ->
@@ -115,13 +129,19 @@ run = (js) ->
     try
       step() for i in [1 .. Math.sqrt(steps)]
     catch
-      clearInterval(interval)
-      interval = null
+      stopRunning()
     commands.update()
   , 50
 
+reset = ->
+  stopRunning()
+
 d3.select('#run').on 'click', ->
   run d3.select('#input').property('value')
+
+d3.select('#stop').on 'click', stopRunning
+
+reset()
 
 EXAMPLE =
   ant: """

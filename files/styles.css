@@ -111,18 +111,22 @@ textarea::selection {
   color: #fff;
 }
 button {
-  width: 8rem;
   height: 2rem;
   background: #fff;
   color: #39f;
   border: 0.125rem solid #def;
-  font-size: 1.125rem;
-  font-weight: 700;
-  line-height: 1.25rem;
-  padding: 0.25rem 1.25rem;
+  padding: 0.25rem 1rem;
   margin: 0;
   border-radius: 0.5rem;
   cursor: pointer;
+}
+button svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+button path {
+  fill: #39f;
+  stroke: none;
 }
 button:focus {
   outline: none;
@@ -131,6 +135,10 @@ button:hover {
   border: 0.125rem solid #39f;
   background: #39f;
   color: #fff;
+}
+button:hover path {
+  fill: #fff;
+  stroke: none;
 }
 
 .grid {
