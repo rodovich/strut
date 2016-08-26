@@ -250,6 +250,6 @@ applySelectedExample = ->
   example = d3.select('#example').property('value')
   d3.select('#input').property 'value', EXAMPLE[example]
 
-d3.select('#example').on 'click', applySelectedExample
+d3.select('#example').on 'change', applySelectedExample
 
 applySelectedExample()
