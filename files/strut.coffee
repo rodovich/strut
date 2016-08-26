@@ -168,6 +168,52 @@ EXAMPLE =
     turnLeft(Math.atan2(v2.y, v2.x) - Math.atan2(v.y, v.x));
     moveForward(Math.hypot(dt * v.y, dt * v.x));
     """
+  star:
+    """
+    var POINTS = [
+      { x: 2, y: 1 },
+      { x: 6, y: 3 },
+      { x: 10, y: 1 },
+      { x: 9, y: 4.5 },
+      { x: 11.5, y: 7 },
+      { x: 8, y: 7.5 },
+      { x: 6, y: 11 },
+      { x: 4, y: 7.5 },
+      { x: 0.5, y: 7 },
+      { x: 3, y: 4.5 },
+    ];
+    var SEGMENTS = [];
+    for (var index = 0; index < POINTS.length; index++) {
+      SEGMENTS.push({ p1: POINTS[index], p2: POINTS[(index + 1) % POINTS.length] });
+    }
+    // http://bryceboe.com/2006/10/23/line-segment-intersection-algorithm/
+    var ccw = function(A, B, C) {
+      return (C.y - A.y) * (B.x - A.x) > (B.y - A.y) * (C.x - A.x);
+    };
+    var intersect = function(A, B, C, D) {
+      return ccw(A, C, D) !== ccw(B, C, D) && ccw(A, B, C) !== ccw(A, B, D);
+    };
+    var hit = false;
+    SEGMENTS.forEach(function(s) {
+      var p1 = { x: currentX(), y: currentY() };
+      var v = { x: DIAMETER * Math.cos(currentHeading()), y: DIAMETER * Math.sin(currentHeading()) };
+      var p2 = { x: p1.x + v.x, y: p1.y + v.y };
+      var incidenceAngle = currentHeading();
+      var segmentAngle = Math.atan2(s.p2.y - s.p1.y, s.p2.x - s.p1.x);
+      var ss = Math.hypot(s.p2.y - s.p1.y, s.p2.x - s.p1.x);
+      if (intersect(p1, p2, s.p1, s.p2)) {
+        var rejectionAngle = Math.atan2(v.y / DIAMETER - Math.cos(segmentAngle - incidenceAngle) * (s.p2.y - s.p1.y) / ss, v.x / DIAMETER - Math.cos(segmentAngle - incidenceAngle) * (s.p2.x - s.p1.x) / ss);
+        var resultAngle = Math.PI + 2 * rejectionAngle - incidenceAngle;
+        turnLeft(resultAngle - incidenceAngle);
+        hit = true;
+      }
+    });
+
+    if (!hit) {
+      lower();
+      moveForward(DIAMETER);
+    }
+    """
 
 applySelectedExample = ->
   example = d3.select('#example').property('value')
