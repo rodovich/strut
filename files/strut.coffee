@@ -18,27 +18,26 @@ do -> # add grid
         .attr 'cy', y
         .attr 'r', DIAMETER / 3
 
-
-state = {}
-[x, y] = [MAX_X / 2, MAX_Y / 2]
-heading = 0
-down = false
-history = []
-
 gcode = d3.select('#gcode')
 
-path = g.append 'path'
-  .attr 'class', 'path'
-  .attr 'stroke-width', DIAMETER
+newAgent = ->
+  state = {}
+  [x, y] = [MAX_X / 2, MAX_Y / 2]
+  heading = 0
+  down = false
+  history = []
 
-marker = g.append 'circle'
-  .attr 'class', 'marker'
-  .attr 'cx', x
-  .attr 'cy', y
-  .attr 'r', DIAMETER / 2
-  .attr 'stroke-width', DIAMETER / 4
+  path = g.append 'path'
+    .attr 'class', 'path'
+    .attr 'stroke-width', DIAMETER
 
-update = do ->
+  marker = g.append 'circle'
+    .attr 'class', 'marker'
+    .attr 'cx', x
+    .attr 'cy', y
+    .attr 'r', DIAMETER / 2
+    .attr 'stroke-width', DIAMETER / 4
+
   pointsToPathData = (points) ->
     return '' if points.length is 0
     subpaths = ("M #{subsequence}" for subsequence in points)
@@ -55,16 +54,6 @@ update = do ->
       lines.push "G0 Z0.25"
     lines.join('\n')
 
-  ->
-    marker
-      .attr 'cx', x
-      .attr 'cy', y
-    path
-      .attr 'd', pointsToPathData(history)
-    gcode.text pointsToGcode(history)
-    history.length
-
-commands = do ->
   raise: ->
     down = false
 
@@ -98,6 +87,25 @@ commands = do ->
   currentHeading: ->
     heading
 
+  state: ->
+    state
+
+  history: ->
+    history
+
+  update: ->
+    marker
+      .attr 'cx', x
+      .attr 'cy', y
+    path
+      .attr 'd', pointsToPathData(history)
+    gcode.text pointsToGcode(history)
+    history.length
+
+  remove: ->
+    marker.remove()
+    path.remove()
+
 interval = null
 stopRunning = ->
   d3.select('#run').style 'display', 'block'
@@ -105,6 +113,8 @@ stopRunning = ->
   if interval?
     clearInterval(interval)
     interval = null
+
+agent = null
 
 run = (js) ->
   stopRunning()
@@ -122,8 +132,8 @@ run = (js) ->
       };
     })()
     """
-  { moveForward, turnLeft, turnRight, raise, lower, currentX, currentY, currentHeading } = commands
-  step = doRun? state, MAX_X, MAX_Y, DIAMETER, moveForward, turnLeft, turnRight, raise, lower, currentX, currentY, currentHeading
+  { moveForward, turnLeft, turnRight, raise, lower, currentX, currentY, currentHeading } = agent
+  step = doRun? agent.state(), MAX_X, MAX_Y, DIAMETER, moveForward, turnLeft, turnRight, raise, lower, currentX, currentY, currentHeading
 
   steps = 0
   interval = setInterval ->
@@ -132,17 +142,14 @@ run = (js) ->
       step() for i in [1 .. Math.sqrt(steps)]
     catch
       stopRunning()
-    update()
+    agent.update()
   , 50
 
 reset = ->
   stopRunning()
-  state = {}
-  [x, y] = [MAX_X / 2, MAX_Y / 2]
-  heading = 0
-  down = false
-  history = []
-  update()
+  agent?.remove()
+  agent = newAgent()
+  agent.update()
   d3.select('#reset').style 'display', 'none'
 
 d3.select('#run').on 'click', ->
