@@ -181,17 +181,17 @@ EXAMPLE =
   gravity: """
     state.dt = state.dt || 1;
     state.t = (state.t || 0) + state.dt;
-    state.speed = state.speed || 0;
+    state.speed = state.speed || 0.1;
     state.attractors = [
-      { x: 5, y: 3, G: 0.004 },
-      { x: 5, y: 5, G: 0.0004 },
+      { x: 6, y: 4, G: 0.01 },
+      { x: 6, y: 8, G: 0.001 },
     ];
 
     var a = { x: 0, y: 0 };
     state.attractors.forEach(function(p) {
       var dx = p.x - currentX();
       var dy = p.y - currentY();
-      var d = Math.hypot(dy, dx);
+      var d = Math.max(Math.hypot(dy, dx), 0.5);
       a.x += state.dt * p.G * (dx / d) / Math.pow(d, 2);
       a.y += state.dt * p.G * (dy / d) / Math.pow(d, 2);
     });
@@ -199,7 +199,7 @@ EXAMPLE =
     var v = { x: state.speed * Math.cos(currentHeading()), y: state.speed * Math.sin(currentHeading()) };
     var v2 = { x: v.x + a.x, y: v.y + a.y };
     var dt = 1 / 16;
-    state.speed = Math.hypot(v2.y, v2.x);
+    state.speed = 0.999 * Math.hypot(v2.y, v2.x);
     state.dt = dt;
 
     lower();
