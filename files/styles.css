@@ -26,7 +26,7 @@ h1 {
   font-size: 2.25rem;
   line-height: 2.5rem;
   font-weight: 400;
-  color: #e43;
+  color: #f63;
 }
 h2 {
   font-size: 1.125rem;
@@ -50,13 +50,24 @@ h1, h2 {
   border-radius: 0.5rem;
   background: #f9f9f9;
 }
-#gcode {
-  width: 20rem;
+#gcodes {
   margin: 4rem auto 0;
+}
+#gcodes pre {
+  float: left;
+  width: 19rem;
   padding: 0.5em 1em;
   border-radius: 0.5rem;
-  background: #f9f9f9;
-  color: #999;
+  opacity: 0.6;
+  background: #f5f5f5;
+  color: #39f;
+}
+#gcodes pre + pre {
+  margin-left: 1.5rem;
+  color: #f63;
+}
+#gcodes pre + pre + pre {
+  color: #93f;
 }
 #preview {
   box-sizing: content-box;
@@ -152,10 +163,24 @@ button:hover path {
   fill: #39f;
   stroke: #fff;
 }
+.marker ~ .marker {
+  fill: #f63;
+}
+.marker ~ .marker ~ .marker {
+  fill: #93f;
+}
 .path {
   fill: none;
   stroke: #39f;
   stroke-linejoin: round;
   stroke-linecap: round;
   opacity: 0.4;
+}
+.path ~ .path {
+  stroke: #f63;
+  opacity: 0.35;
+}
+.path ~ .path ~ .path {
+  stroke: #93f;
+  opacity: 0.3;
 }

@@ -18,7 +18,7 @@ do -> # add grid
         .attr 'cy', y
         .attr 'r', DIAMETER / 3
 
-gcode = d3.select('#gcode')
+gcodes = d3.select('#gcodes')
 
 newAgent = ->
   state = {}
@@ -37,6 +37,8 @@ newAgent = ->
     .attr 'cy', y
     .attr 'r', DIAMETER / 2
     .attr 'stroke-width', DIAMETER / 4
+
+  gcode = gcodes.append 'pre'
 
   pointsToPathData = (points) ->
     return '' if points.length is 0
@@ -105,6 +107,7 @@ newAgent = ->
   remove: ->
     marker.remove()
     path.remove()
+    gcode.remove()
 
 interval = null
 stopRunning = ->
@@ -114,7 +117,7 @@ stopRunning = ->
     clearInterval(interval)
     interval = null
 
-agent = null
+agents = []
 
 run = (js) ->
   stopRunning()
@@ -132,24 +135,27 @@ run = (js) ->
       };
     })()
     """
-  { moveForward, turnLeft, turnRight, raise, lower, currentX, currentY, currentHeading } = agent
-  step = doRun? agent.state(), MAX_X, MAX_Y, DIAMETER, moveForward, turnLeft, turnRight, raise, lower, currentX, currentY, currentHeading
+  funcs = for agent in agents
+    do (agent) ->
+      { moveForward, turnLeft, turnRight, raise, lower, currentX, currentY, currentHeading } = agent
+      doRun? agent.state(), MAX_X, MAX_Y, DIAMETER, moveForward, turnLeft, turnRight, raise, lower, currentX, currentY, currentHeading
 
   steps = 0
   interval = setInterval ->
     steps += 1
     try
-      step() for i in [1 .. Math.sqrt(steps)]
+      for i in [1 .. Math.sqrt(steps)]
+        func() for func in funcs
     catch
       stopRunning()
-    agent.update()
+    agent.update() for agent in agents
   , 50
 
 reset = ->
   stopRunning()
-  agent?.remove()
-  agent = newAgent()
-  agent.update()
+  agent.remove() for agent in agents
+  agents = [newAgent(), newAgent(), newAgent()]
+  agent.update() for agent in agents
   d3.select('#reset').style 'display', 'none'
 
 d3.select('#run').on 'click', ->
