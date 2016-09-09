@@ -22,8 +22,8 @@ gcode = d3.select('#gcode')
 
 newAgent = ->
   state = {}
-  [x, y] = [MAX_X / 2, MAX_Y / 2]
-  heading = 0
+  [x, y] = [MAX_X * (Math.random() + 0.5) / 2, MAX_Y * (Math.random() + 0.5) / 2]
+  heading = 2 * Math.PI * Math.random()
   down = false
   history = []
 
